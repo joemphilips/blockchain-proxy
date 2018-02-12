@@ -3,11 +3,13 @@ import * as fs from 'fs'
 const explorer =  require("blockchain.info/blockexplorer")
 const Client = require('bitcoin-core')
 const ini = require("ini")
+const debug = require("debug")("blockchain-proxy")
 
 export interface BlockchainProxy {
   getPrevHash: (tx: Transaction) => Promise<any>;
   baseUrl?: string;
   api?: any;
+  client?: any;
 }
 
 /*
@@ -15,24 +17,44 @@ export class LocalBchProxy implements BlockchainProxy {
 }
 */
 
+export class Stub implements BlockchainProxy {
+  public async getPrevHash (tx: Transaction) {
+    return "";
+  }
+}
+
 export class RPC implements BlockchainProxy {
   public client: any;
   constructor(confPath: fs.PathLike){
     let conf = ini.parse(fs.readFileSync(confPath, "utf-8"))
-    const opts = {username: conf.rpcuser, password: conf.rpcpassword, host: conf.rpcconnect, network: "mainnet"}
+    const opts = {
+      username: conf.rpcuser,
+      password: conf.rpcpassword,
+      host: conf.rpcconnect,
+      network: "testnet"}
     this.client = new Client(opts)
   }
 
-  public async getPrevHash (tx: Transaction): Promise<string> {
-    console.log( `tx is ${JSON.stringify(tx)}`)
-    console.log( `client is ${JSON.stringify(this.client)}`)
+  public async getPrevHash (tx: Transaction): Promise<string[]> {
+    debug( `tx is ${JSON.stringify(tx.toHex())}`)
+    debug( `client is ${JSON.stringify(this.client)}`)
+    debug( `tx id is ${tx.getId()}`)
     let RawTx: string = await this.client.getRawTransaction(tx.getId())
-    console.log(`Raw TX is ${RawTx}`)
-    let txwithInfo = await this.client.decodeRawTransaction(RawTx)
-    console.log( `tx withInfo is ${txwithInfo}`)
-    let prevTxRaw: any = await Promise.all( txwithInfo.vin.txid.map((id: string)  => this.client.getRawTransaction(id)))
-    let prevTx: Transaction = Transaction.fromHex(prevTxRaw)
-    return prevTx.getId()
+    debug(`Raw TX is ${RawTx}`)
+    let txwithInfo: any = await this.client.decodeRawTransaction(RawTx)
+    debug( `tx withInfo is ${ JSON.stringify(txwithInfo) } `)
+
+    // using Array.map() will cause bizarre error. So for loop instead.
+    let promises = []
+    for (let i of txwithInfo.vin) {
+      let promise = this.client.getRawTransaction(i.txid)
+      promises.push(promise)
+    }
+    let prevTxRaw = await Promise.all(promises)
+
+    return prevTxRaw
+      .map((rtx: string) => Transaction.fromHex(rtx))
+      .map((tx: Transaction) => tx.getId())
   }
 }
 
