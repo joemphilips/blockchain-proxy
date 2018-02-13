@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tsc && ava",
-    "build": "rm index.d.ts && tsc --module amd --outFile index.js"
+    "build": "tsc --module amd --outFile index.js"
   },
   "keywords": [],
   "author": "",
