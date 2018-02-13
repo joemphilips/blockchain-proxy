@@ -2,10 +2,10 @@
   "name": "blockchain-proxy",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "tsc && ava",
-    "build": "tsc --module amd --outFile index.js"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
