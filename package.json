@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && ava"
+    "test": "tsc && ava",
+    "build": "tsc --module amd --outFile index.js"
   },
   "keywords": [],
   "author": "",
