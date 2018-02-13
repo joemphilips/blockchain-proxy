@@ -2,7 +2,7 @@
   "name": "blockchain-proxy",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/proxy.js",
   "scripts": {
     "test": "tsc && ava",
     "build": "tsc"
