@@ -1,4 +1,4 @@
-import {Transaction} from 'bitcoinjs-lib'
+import {Network, Transaction} from 'bitcoinjs-lib'
 import * as fs from 'fs'
 const explorer =  require("blockchain.info/blockexplorer")
 const Client = require('bitcoin-core')
@@ -10,6 +10,7 @@ export interface BlockchainProxy {
   baseUrl?: string;
   api?: any;
   client?: any;
+  network?: Network;
 }
 
 /*
@@ -25,13 +26,15 @@ export class Stub implements BlockchainProxy {
 
 export class RPC implements BlockchainProxy {
   public client: any;
-  constructor(confPath: fs.PathLike){
-    let conf = ini.parse(fs.readFileSync(confPath, "utf-8"))
-    const opts = {
-      username: conf.rpcuser,
-      password: conf.rpcpassword,
-      host: conf.rpcconnect,
-      network: "testnet"}
+  constructor(confPath?: fs.PathLike){
+      debug(`going to use testnet bitcoin-core specified in ${conf}`)
+      let conf = ini.parse(fs.readFileSync(confPath, "utf-8"))
+      const opts = {
+        username: conf.rpcuser,
+        password: conf.rpcpassword,
+        host: conf.rpcconnect,
+        network: conf.testnet ? "testnet" : "mainnet"
+    }
     this.client = new Client(opts)
   }
 
@@ -55,6 +58,10 @@ export class RPC implements BlockchainProxy {
     return prevTxRaw
       .map((rtx: string) => Transaction.fromHex(rtx))
       .map((tx: Transaction) => tx.getId())
+  }
+  public async isConnected() {
+    if(this.client.ping)
+
   }
 }
 

@@ -6,7 +6,7 @@
   "typings": "dist/proxy.d.ts",
   "scripts": {
     "test": "tsc && ava ./dist/test",
-    "pretest": "cp ./test/*.conf dist/test ",
+    "pretest": "mkdir -p dist/test/ && cp ./test/*.conf dist/test/ ",
     "build": "tsc"
   },
   "keywords": [],

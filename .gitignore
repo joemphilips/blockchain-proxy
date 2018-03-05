@@ -4,6 +4,4 @@ node_modules/
 *.js
 *.map
 !index.js
-dist/test/
-!dist/*.js
-!dist/*.ts
+dist
