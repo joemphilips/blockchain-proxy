@@ -2,8 +2,8 @@
   "name": "blockchain-proxy",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/proxy.js",
-  "typings": "dist/proxy.d.ts",
+  "main": "./dist/src/proxy.js",
+  "typings": "dist/src/proxy.d.ts",
   "scripts": {
     "test": "tsc && ava ./dist/test",
     "pretest": "mkdir -p dist/test/ && cp ./test/*.conf dist/test/ ",
